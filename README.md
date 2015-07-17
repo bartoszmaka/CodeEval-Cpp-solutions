@@ -1,2 +1,2 @@
-# CodeEval-Cpp-solutions
-Code Eval C++ sources
+# CodeEval-solutions
+C++ and Python3 sources
