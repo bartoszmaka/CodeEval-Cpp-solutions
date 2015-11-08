@@ -2,10 +2,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
-/*
-    I know its not the fastest way to solve this problem
-    but its good to practice object oriented programming
-*/
 
 using namespace std;
 
