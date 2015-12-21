@@ -30,7 +30,8 @@ class Snake(object):
 
     def bite(self):
         if self.tab[0] in self.tab[1::]:
-            return True
+            if self.just_eaten == False:
+                return True
         else:
             return False
 
@@ -40,7 +41,7 @@ class Snake(object):
         self.just_eaten = True
 
     def move(self):
-        self.just_eaten == False
+        self.just_eaten = False
         self.tab.insert(0, [self.tab[0][0], self.tab[0][1]] )
         self.tab.pop()
         if self.dir == 0: self.tab[0][0] -= 1
@@ -91,8 +92,7 @@ def draw_scene(yx):
         screen.addstr(yx[0], x, '#')
 
 def check_lose(yx, Snake):
-    if Snake.just_eaten == False:
-        if Snake.bite() == True: return True
+    if Snake.bite() == True: return True
     if Snake.tab[0][1] == yx[1] and Snake.dir == 1: return True
     if Snake.tab[0][1] == 0 and Snake.dir == 3: return True
     if Snake.tab[0][0] == yx[0] and Snake.dir == 2: return True
