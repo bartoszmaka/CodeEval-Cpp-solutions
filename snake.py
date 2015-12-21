@@ -19,7 +19,7 @@ class Snake(object):
 
     def draw(self):
         screen.addstr(int (self.tab[0][0]) , int (self.tab[0][1]), '@', curses.A_BOLD)
-        for i in range( len (self.tab)):
+        for i in range(1,  len (self.tab)):
             screen.addstr(int (self.tab[i][0]), int (self.tab[i][1]), '@')
 
     def turn_head(self, d):
@@ -50,8 +50,8 @@ class Snake(object):
         elif self.dir == 3: self.tab[0][1] -= 1
 
     def debug(self):
-        screen.addstr( 12, 12, '{0}, {1}'.format(self.tab[0][1], self.tab[0][0]) )
-        screen.addstr( 13, 12, str(self.size) )
+        screen.addstr( 1, 1, '{0}, {1}'.format(self.tab[0][1], self.tab[0][0] ) )
+        screen.addstr( 2, 1, str(self.size) )
 
 
 
@@ -62,7 +62,6 @@ class Snack(object):
         self.x = x
         self.y = y
         self.type = 1
-        #screen.addstr(self.y, self.y, '*')
 
     def loc(self):
         return (self.y, self.x)
@@ -109,6 +108,35 @@ def key_manager(key, Snake, yx, snacks):
     if key == ord('b'): spawn_food(yx, snacks)
     #
 
+def menu(yx):
+    tab = [' ', ' ', ' ']
+    key = 'something'
+    foo = 0
+    while (key != ord('d')):
+        screen.clear()
+        for i in range( len(tab) ):
+            if i == foo: tab[i] = '>'
+            else: tab[i] = ' '
+        screen.addstr(int (yx[0] / 2 - 1), int (yx[1] / 2 - 2) , '{0} Play'.format (tab[0]) )
+        screen.addstr(int (yx[0] / 2), int (yx[1] / 2 - 2) , '{0} Options'.format (tab[1]) )
+        screen.addstr(int (yx[0] / 2 + 1), int (yx[1] / 2 - 2), '{0} Exit'.format (tab[2]) )
+        screen.move(yx[0], yx[1])
+        key = screen.getch()
+        if key == ord('w'):
+            foo = (foo + 2) % 3
+        if key == ord('s'):
+            foo = (foo + 1) % 3
+    if foo == 0: return True
+    elif foo == 1: options(yx)
+    elif foo == 2: return False
+
+def options(yx):
+    screen.clear()
+    screen.addstr(int (yx[0] / 2), int (yx[1] / 2 - 2), 'JESTEM W OPCJACH')
+    key = screen.getch()
+    menu(yx)
+
+
 ########################################
 
 #MAIN
@@ -116,11 +144,13 @@ def key_manager(key, Snake, yx, snacks):
 screen = curses.initscr()
 curses.noecho()
 #curses.cbreak()
+
 yx = screen.getmaxyx()
 yx = (yx[0] - 2, yx[1] - 20)
 draw_scene(yx)
 
 # init game variables
+lost = False
 snacks = []
 key = 'something'
 points = 0
@@ -129,21 +159,22 @@ Bart = Snake(yx)
 Bart.draw()
 Bart.grow()
 
-# game
-while( key != ord('p')):
-    now = time.time()
-    key = screen.getch()
-    key_manager(key, Bart, yx, snacks)
-    Bart.move()
-    screen.clear()
-    draw_scene(yx)
-    snacks_manager(Bart, snacks)
-    Bart.debug()
-    Bart.draw()
-    screen.refresh()
-    #time.sleep(0.5)
-    if(check_lose(yx, Bart) == True): break
+if menu(yx) == True:
+    curses.halfdelay(5)
 
+    while not lost:
+        key = screen.getch()
+
+        key_manager(key, Bart, yx, snacks)
+        Bart.move()
+        screen.clear()
+        draw_scene(yx)
+        snacks_manager(Bart, snacks)
+        Bart.debug()
+        Bart.draw()
+        screen.move(yx[0], yx[1])
+        screen.refresh()
+        if(check_lose(yx, Bart) == True): lost = True
 
 curses.endwin()
 #END OF MAIN
